@@ -19,7 +19,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +47,6 @@ import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.ui.theme.MyTheme
 import com.example.androiddevchallenge.viewmodel.ActivityViewModel
 
-@ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<ActivityViewModel>()
