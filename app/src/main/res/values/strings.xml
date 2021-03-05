@@ -10,4 +10,6 @@
       the License.
       -->
     <string name="app_name">AndroidDevChallenge</string>
+
+    <string name="before_the_end_of_the_game">%1$dday %2$dhour %3$dmin %4$dsec</string>
 </resources>

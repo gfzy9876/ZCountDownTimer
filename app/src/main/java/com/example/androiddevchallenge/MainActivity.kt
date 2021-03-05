@@ -17,31 +17,29 @@ package com.example.androiddevchallenge
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import rx.Observable
-import rx.Subscription
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
-import java.util.*
-import java.util.concurrent.TimeUnit
+import com.example.androiddevchallenge.viewmodel.ActivityViewModel
 
 @ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
 
-    private val mCountDownData = MutableLiveData(0L)
-    private var mTimer: Subscription? = null
+    private val viewModel by viewModels<ActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,57 +48,68 @@ class MainActivity : AppCompatActivity() {
                 MyApp()
             }
         }
-        val instance = Calendar.getInstance()
-        instance.set(2021, 2, 9, 23, 59, 59)
-        val endMills = instance.timeInMillis
-
-        mTimer = Observable.interval(0, 1, TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                val diff = endMills - System.currentTimeMillis()
-                mCountDownData.value = diff
-            }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (mTimer?.isUnsubscribed == false) {
-            mTimer?.unsubscribe()
-        }
+        viewModel.startCountDownTimer()
     }
 
     @Composable
     fun MyApp() {
         Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
-            Column {
-                var diff = mCountDownData.observeAsState().value ?: 0L
-                val day = diff / 60 / 60 / 24 / 1000
-                diff -= day * 60 * 60 * 24 * 1000
-                val hour = diff / 60 / 60 / 1000
-                diff -= hour * 60 * 60 * 1000
-                val min = diff / 60 / 1000
-                diff -= min * 60 * 1000
-                val second = diff / 1000
-                Text(text = "距离比赛结束还有: ${day}天 ${hour}小时 ${min}分 ${second}秒")
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .wrapContentWidth(align = Alignment.CenterHorizontally)
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(20.dp),
+                    elevation = 10.dp,
+                ) {
+                    Image(
+                        contentScale = ContentScale.Crop,
+                        painter = painterResource(id = R.mipmap.bg),
+                        contentDescription = null
+                    )
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "before the end of the game",
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(30.dp))
+                        CountDownText(diff = viewModel.countDownData.observeAsState().value ?: 0L)
+                    }
+                }
             }
         }
     }
-}
 
-//
-//@Preview("Light Theme", widthDp = 360, heightDp = 640)
-//@Composable
-//fun LightPreview() {
-//    MyTheme {
-//        MyApp()
-//    }
-//}
-//
-//@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-//@Composable
-//fun DarkPreview() {
-//    MyTheme(darkTheme = true) {
-//        MyApp()
-//    }
-//}
+    @Composable
+    fun CountDownText(diff: Long) {
+        var tempDiff = diff
+        val day = tempDiff / 60 / 60 / 24 / 1000
+        tempDiff -= day * 60 * 60 * 24 * 1000
+        val hour = tempDiff / 60 / 60 / 1000
+        tempDiff -= hour * 60 * 60 * 1000
+        val min = tempDiff / 60 / 1000
+        tempDiff -= min * 60 * 1000
+        val second = tempDiff / 1000
+        Text(
+            text = getString(
+                R.string.before_the_end_of_the_game,
+                day,
+                hour,
+                min,
+                second
+            ),
+            fontSize = 24.sp,
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+    }
+}
