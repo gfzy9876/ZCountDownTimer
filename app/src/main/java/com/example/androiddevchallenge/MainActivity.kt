@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -41,24 +42,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.androiddevchallenge.timer.ui.CountDownTimer
+import com.example.androiddevchallenge.timer.viewmodel.CountDownViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import com.example.androiddevchallenge.viewmodel.ActivityViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<ActivityViewModel>()
+    private val countDownViewModel by viewModels<CountDownViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
-                MyApp()
+//                MyApp()
+                CountDownTimer(viewModel = countDownViewModel)
             }
         }
-        viewModel.startCountDownTimer()
     }
 
     @Composable
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity() {
                         .height(300.dp)
                         .padding(20.dp),
                     elevation = 10.dp,
+                    shape = RoundedCornerShape(100.dp)
                 ) {
                     Image(
                         contentScale = ContentScale.Crop,
@@ -92,34 +94,9 @@ class MainActivity : AppCompatActivity() {
                             color = Color.White
                         )
                         Spacer(modifier = Modifier.height(30.dp))
-                        CountDownText(diff = viewModel.countDownData.observeAsState().value ?: 0L)
                     }
                 }
             }
         }
-    }
-
-    @Composable
-    fun CountDownText(diff: Long) {
-        var tempDiff = diff
-        val day = tempDiff / 60 / 60 / 24 / 1000
-        tempDiff -= day * 60 * 60 * 24 * 1000
-        val hour = tempDiff / 60 / 60 / 1000
-        tempDiff -= hour * 60 * 60 * 1000
-        val min = tempDiff / 60 / 1000
-        tempDiff -= min * 60 * 1000
-        val second = tempDiff / 1000
-        Text(
-            text = getString(
-                R.string.before_the_end_of_the_game,
-                day,
-                hour,
-                min,
-                second
-            ),
-            fontSize = 24.sp,
-            color = Color.White,
-            textAlign = TextAlign.Center
-        )
     }
 }

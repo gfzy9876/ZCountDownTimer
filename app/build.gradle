@@ -74,8 +74,7 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0'
-    implementation group: 'io.reactivex', name: 'rxandroid', version: '1.2.1'
-
+    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'
 
     testImplementation 'junit:junit:4.13.2'
 
