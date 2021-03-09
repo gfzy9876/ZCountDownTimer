@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit
 class CountDownViewModel : ViewModel() {
 
     var totalCount: Int = 0
+    val isCountTimingData = MutableLiveData(false)
     val currentCountLiveData = MutableLiveData(0)
     private var countDownTimer: Disposable? = null
 
@@ -34,6 +35,7 @@ class CountDownViewModel : ViewModel() {
         totalCount = totalCountSeconds
         currentCountLiveData.value = totalCount
         disposeTimer()
+        isCountTimingData.value = true
         countDownTimer = Observable.interval(0, 1, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -41,13 +43,12 @@ class CountDownViewModel : ViewModel() {
                 Log.d("GFZY", "subscribe: ${currentCountLiveData.value}")
                 if (currentCountLiveData.value ?: 0 <= 0) {
                     disposeTimer()
+                    isCountTimingData.value = false
                 } else {
                     currentCountLiveData.value = currentCountLiveData.value!! - 1
                 }
             }
     }
-
-    fun isCountDownTiming(): Boolean = countDownTimer?.isDisposed == false
 
     override fun onCleared() {
         disposeTimer()
